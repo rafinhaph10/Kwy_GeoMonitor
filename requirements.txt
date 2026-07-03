@@ -8,6 +8,4 @@ streamlit-folium
 matplotlib
 reportlab
 openpyxl
-fiona
-pyproj
 schedule
