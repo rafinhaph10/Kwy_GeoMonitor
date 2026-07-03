@@ -1,0 +1,13 @@
+streamlit
+geopandas
+pandas
+requests
+shapely
+folium
+streamlit-folium
+matplotlib
+reportlab
+openpyxl
+fiona
+pyproj
+schedule
