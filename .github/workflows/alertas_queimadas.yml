@@ -5,6 +5,9 @@ on:
     - cron: "0 */6 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   monitorar-queimadas:
     runs-on: ubuntu-latest
@@ -12,6 +15,12 @@ jobs:
     steps:
       - name: Baixar repositório
         uses: actions/checkout@v4
+
+      - name: Verificar arquivos
+        run: |
+          pwd
+          ls -la
+          ls -la data || true
 
       - name: Configurar Python
         uses: actions/setup-python@v5
@@ -31,7 +40,15 @@ jobs:
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           AREA_GEOJSON_PATH: data/area_monitorada.geojson
+          ALERT_DB_PATH: data/alert_history.db
+          BUFFER_KM: "10"
         run: python monitor_alertas.py
+
+      - name: Salvar histórico de alertas
+        run: |
+          git config user.name "kwy-geomonitor-bot"
+          git config user.email "kwy-geomonitor-bot@users.noreply.github.com"
+          git add data/alert_history.db || true
+          git commit -m "Atualiza histórico de alertas" || echo "Sem alterações no histórico"
+          git push || echo "Nada para enviar"
